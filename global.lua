@@ -1,3 +1,9 @@
+function signednumber(n)
+    local str = tostring(n)
+    if n >= 0 then return "+" .. n end
+    return str
+end
+
 function firstupper(str)
     return str:gsub("^%l", string.upper)
 end

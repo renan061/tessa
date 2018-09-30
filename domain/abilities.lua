@@ -15,15 +15,29 @@ function abilities.new(str, dex, con, int, wis, cha)
 
     -- calculated
     local function mod(score) return math.floor((score - 10) / 2) end
-    t.str_mod = mod(t.str)
-    t.dex_mod = mod(t.dex)
-    t.con_mod = mod(t.con)
-    t.int_mod = mod(t.int)
-    t.wis_mod = mod(t.wis)
-    t.cha_mod = mod(t.cha)
+    t.strmod = mod(t.str)
+    t.dexmod = mod(t.dex)
+    t.conmod = mod(t.con)
+    t.intmod = mod(t.int)
+    t.wismod = mod(t.wis)
+    t.chamod = mod(t.cha)
 
     setmetatable(t, abilities)
     return t
+end
+
+function abilities:description()
+    local data = {
+        self.str, self.strmod,
+        self.dex, self.dexmod,
+        self.con, self.conmod,
+        self.int, self.intmod,
+        self.wis, self.wismod,
+        self.cha, self.chamod
+    }
+    local format = "STR %d (%d) | DEX %d (%d) | CON %d (%d) | " ..
+        "INT %d (%d) | WIS %d (%d) | CHA %d (%d)"
+    return string.format(format, table.unpack(data))
 end
 
 return abilities

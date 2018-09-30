@@ -1,3 +1,8 @@
+function assert_boolean(b)
+    assert(type(b) == "boolean", "value must be a boolean")
+    return b
+end
+
 function assert_number(n)
     assert(type(n) == "number", "value must be a number")
     return n
