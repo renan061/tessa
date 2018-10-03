@@ -1,22 +1,30 @@
-local d = require("die") -- TODO
+require("asserts")
+
+local enum = require("domain/enum")
 
 local dice = {}
 dice.__index = dice
+
+local function dieaverage(d)
+    if not enum.die[d] then
+        error("invalid die type")
+    end
+    return d / 2 + 0.5
+end
+
 
 function dice.new(quantity, die)
     local t = {}
 
     t.quantity = assert_positive_number(quantity)
-
-    assert(d.valid(die)) -- TODO
-    t.die = die
+    t.die = die -- TODO: assert valid die
 
     setmetatable(t, dice)
     return t
 end
 
 function dice:average()
-    local average = self.quantity * d.average(self.die) -- TODO
+    local average = self.quantity * dieaverage(self.die)
     return math.floor(average)
 end
 

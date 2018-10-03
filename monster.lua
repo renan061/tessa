@@ -1,8 +1,13 @@
+local enum = require("domain/enum")
+local text = require("text")
+
 local monster = {}
 monster.__index = monster
 
 function monster.new(name, size, type_, alignment, acmod, hitdice, speed,
-    proficiency, abilities, saves)
+    proficiency, abilities, saves, skills,
+    damage_vulnerabilities, damage_resistances, damage_immunities,
+    condition_immunities)
 
     local t = {}
 
@@ -17,22 +22,48 @@ function monster.new(name, size, type_, alignment, acmod, hitdice, speed,
     t.speed = speed
 
     t.proficiency = proficiency
-    t.abilities = abilities
-    t.saves = saves
+
+    do -- abilities
+        t.abilities = {scores = {}, modifiers = {}}
+        for _, v, i in enum.iterate(enum.ability) do
+            t.abilities.scores[v] = abilities[i]
+            t.abilities.modifiers[v] = math.floor((abilities[i] - 10) / 2)
+        end
+    end
+
+    do -- saves
+        t.saves = {}
+        for ability in enum.iterate(enum.ability) do
+            t.saves[ability] = t.abilities.modifiers[ability]
+            if table.contains(saves, ability) then
+                t.saves[ability] = t.saves[ability] + t.proficiency
+            end
+        end
+    end
+
+    do -- skills
+        t.skills = {}
+        for skill in enum.iterate(enum.skill) do
+            t.skills[skill] = t.abilities.modifiers[enum.skill_modifier[skill]]
+            if table.contains(skills, skill) then
+                t.skills[skill] = t.skills[skill] + t.proficiency
+            end
+        end
+    end
+
+    t.damage_vulnerabilities = damage_vulnerabilities
+    t.damage_resistances = damage_resistances
+    t.damage_immunities = damage_immunities
+    t.condition_immunities = condition_immunities
 
     -- TODO
-    t.skills = nil
-    t.damage_vulnerabilities = nil
-    t.damage_resistances = nil
-    t.damage_immunities = nil
-    t.condition_immunities = nil
     t.senses = nil
     t.languages = nil
     t.challenge = nil
 
     -- calculated
-    t.ac = 10 + t.abilities.dexmod + t.acmod.value
-    t.hp = t.hitdice:average() + t.hitdice.quantity * t.abilities.conmod
+    t.ac = 10 + t.abilities.modifiers.dex + t.acmod.value
+    t.hp = t.hitdice:average() + t.hitdice.quantity * t.abilities.modifiers.con
 
     setmetatable(t, monster)
     return t
@@ -57,22 +88,32 @@ function monster:description()
         --[[ ac           ]] self.ac, actext(self.acmod),
         --[[ hp (total)   ]] self.hp,
         --[[ hp (hitdice) ]] self.hitdice:description(),
-        --[[ hp (plus)    ]] hpplus(self.hitdice, self.abilities.conmod),
+        --[[ hp (plus)    ]] hpplus(self.hitdice, self.abilities.modifiers.con),
         --[[ speed        ]] self.speed:description(),
-        --[[ abilities    ]] self.abilities:description(),
-        --[[ saves        ]] self.saves:description()
+        --[[ abilities    ]] text.abilities(self.abilities),
+        --[[ saves        ]] text.saves(self.saves),
+        --[[ skills       ]] text.skills(self.skills),
+        text.damage_vulnerabilities(self.damage_vulnerabilities),
+        text.damage_resistances(self.damage_resistances),
+        text.damage_immunities(self.damage_immunities),
+        text.condition_immunities(self.condition_immunities)
     }
 
     local divider = "---\n"
 
     local format = "***\n" ..
-        --[[ name                  ]] "%s\n" .. divider ..
-        --[[ size, type, alignment ]] "%s %s, %s\n" .. divider ..
-        --[[ ac                    ]] "Armor Class: %d%s\n" ..
-        --[[ hp                    ]] "Hit Points: %d (%s%s)\n" ..
-        --[[ speed                 ]] "Speed: %s\n" .. divider ..
-        --[[ abilities             ]] "%s\n" ..
-        --[[ saves                 ]] "Saving Throws %s\n" ..
+        --[[ name                   ]] "%s\n" .. divider ..
+        --[[ size, type, alignment  ]] "%s %s, %s\n" .. divider ..
+        --[[ ac                     ]] "Armor Class: %d%s\n" ..
+        --[[ hp                     ]] "Hit Points: %d (%s%s)\n" ..
+        --[[ speed                  ]] "Speed: %s\n" .. divider ..
+        --[[ abilities              ]] "%s\n" ..
+        --[[ saves                  ]] "%s\n" ..
+        --[[ skills                 ]] "%s\n" ..
+        --[[ damage vulnerabilities ]] "%s\n" ..
+        --[[ damage resistances     ]] "%s\n" ..
+        --[[ damage immunities      ]] "%s\n" ..
+        --[[ condition immunities   ]] "%s\n" ..
         "***"
     return string.format(format, table.unpack(data))
 end

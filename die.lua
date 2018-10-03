@@ -19,7 +19,7 @@ function die.valid(d)
 end
 
 function die.average(d)
-    if not die.valid(d) then
+    if not enum.dice[d] then
         error("invalid die type")
     end
     return d / 2 + 0.5
@@ -47,4 +47,4 @@ function die.avg_monster_hitdice(d)
     error("todo")
 end
 
-return die
+return nil

@@ -1,6 +1,6 @@
 require("global")
 
-local ability = require("domain/ability")
+local enum = require("enum")
 
 local saves = {}
 saves.__index = saves
@@ -13,13 +13,13 @@ function saves.new(bitmap, proficiency, abilities)
     -- bitmap masks
     t._masks = {}
     local base = 1 << 5
-    for i, v in ipairs(ability.names) do
+    for i, v in ipairs(enum.ability) do
         t._masks[v] = base >> i - 1
     end
 
     -- saves
     t.values = {}
-    for _, v in ipairs(ability.names) do
+    for _, v in ipairs(enum.ability) do
         local trained = bitmap & t._masks[v] == t._masks[v]
         t.values[v] = trained and proficiency or 0
         t.values[v] = t.values[v] + abilities[v .. "mod"]
@@ -34,7 +34,7 @@ function saves:description()
     for k, v in pairs(self.values) do
         data[k] = firstupper(k) .. " " .. signednumber(v)
     end
-    for i, v in ipairs(ability.names) do
+    for i, v in ipairs(enum.ability) do
         data[i] = data[v]
         data[v] = nil
     end

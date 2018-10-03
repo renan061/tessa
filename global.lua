@@ -1,3 +1,4 @@
+
 function signednumber(n)
     local str = tostring(n)
     if n >= 0 then return "+" .. n end
@@ -15,15 +16,6 @@ function map(f, t)
     end
     return new
 end
-
--- function contains(table, value)
---     for key, val in pairs(table) do
---         if val == value then
---             return true
---         end
---     end
---     return false
--- end
 
 -- function contains_or(table, ...)
 --     local values = arg

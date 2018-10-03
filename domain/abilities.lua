@@ -26,18 +26,24 @@ function abilities.new(str, dex, con, int, wis, cha)
     return t
 end
 
+function abilities:mod(ability)
+    return self[ability .. "mod"]
+end
+
 function abilities:description()
-    local data = {
-        self.str, self.strmod,
-        self.dex, self.dexmod,
-        self.con, self.conmod,
-        self.int, self.intmod,
-        self.wis, self.wismod,
-        self.cha, self.chamod
-    }
-    local format = "STR %d (%d) | DEX %d (%d) | CON %d (%d) | " ..
-        "INT %d (%d) | WIS %d (%d) | CHA %d (%d)"
-    return string.format(format, table.unpack(data))
+    -- local data = {
+    --     self.str, self.strmod,
+    --     self.dex, self.dexmod,
+    --     self.con, self.conmod,
+    --     self.int, self.intmod,
+    --     self.wis, self.wismod,
+    --     self.cha, self.chamod
+    -- }
+    -- local format = "STR %d (%d) | DEX %d (%d) | CON %d (%d) | " ..
+    --     "INT %d (%d) | WIS %d (%d) | CHA %d (%d)"
+    -- return string.format(format, table.unpack(data))
+    -- return text.abilities(self.)
+    return "todo"
 end
 
 return abilities
