@@ -86,5 +86,31 @@ function text.condition_immunities(t)
     return "Condition Immunities: " .. table.concat(t, ", ")
 end
 
+function text.distance(distance)
+    return string.format("%d ft.", distance)
+end
+
+function text.damage(damage)
+    return string.format("%d (%dd%d%s) %s damage", table.unpack({
+        damage:average(),
+        damage.dice_quantity,
+        damage.dice_type,
+        damage.modifier == 0 and "" or signednumber(damage.modifier),
+        damage.damage_type
+    }))
+end
+
+function text.attack(attack)
+    local format = "%s %s Attack: %s to hit, reach %s, one target. Hit: %s%s%s"
+    return string.format(format, table.unpack({
+        firstupper(attack.range),
+        firstupper(attack.type),
+        signednumber(attack.tohit),
+        text.distance(attack.reach),
+        table.concat(map(text.damage, attack.damages), " + "),
+        attack.attack_and and ", and " or ". ",
+        attack.text
+    }))
+end
 
 return text

@@ -1,6 +1,3 @@
-require("global")
-local damage = require("damage")
-
 local attack = {}
 attack.__index = attack
 
@@ -14,34 +11,19 @@ attack.type = {
     spell = "spell"
 }
 
-function attack.new(range, type, tohit, reach, damages)
+function attack.new(range, type, tohit, reach, damages, attack_and, text)
     local t = {}
 
-    -- TODO: asserts
     t.range = range
     t.type = type
     t.tohit = tohit
     t.reach = reach
     t.damages = damages -- array
+    t.attack_and = attack_and
+    t.text = text
 
     setmetatable(t, attack)
     return t
-end
-
-function attack:description()
-    local data = {
-        firstupper(self.range),
-        firstupper(self.type),
-        self.tohit,
-        self.reach,
-        table.concat(map(damage.description, self.damages), " + ")
-    }
-    local format = "%s %s Attack: " ..
-        "+%d to hit, " ..
-        "reach %d ft., " ..
-        "one target. " ..
-        "Hit: %s."
-    return string.format(format, table.unpack(data))
 end
 
 return attack
